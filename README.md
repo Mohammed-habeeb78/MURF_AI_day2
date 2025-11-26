@@ -1,91 +1,72 @@
-# ☕ AI Voice Agents Challenge | Day 2: Coffee Shop Barista Agent
+# 💼 Day 5: AI Voice Agent Challenge - Simple FAQ SDR + Lead Capture Agent
 
-This project is the submission for Day 2 of the AI Voice Agents Challenge, focusing on building a high-performance, real-time voice agent capable of handling complex coffee orders.
+This project implements a sophisticated AI Sales Development Representative (SDR) using the LiveKit Agent SDK. The agent, named **'Sarah,'** is designed to handle frequently asked questions (FAQ) about the fictional "Abhishek Store's" offerings while simultaneously engaging in a natural conversation to qualify and capture essential lead information.
 
-The agent simulates a complete drive-thru or counter ordering experience, designed for low latency and natural, human-like interaction.
+This solution was built as part of the **10 Days of Voice Agents** challenge.
 
----
+## ✨ Features
 
-## 🚀 Key Features
+* **FAQ Retrieval:** Loads product/service information from a `store_faq.json` file and uses it as a knowledge base for answering user questions.
+* **Lead Qualification:** The agent is instructed to naturally gather key lead details (Name, Email, Use Case, etc.) during the conversation.
+* **Function Calling (Tools):**
+    * `update_lead_profile`: Used immediately to capture and update lead data as the user provides it.
+    * `submit_lead_and_end`: Called when the user concludes the conversation, serializing the final lead profile into a `leads_db.json` file.
+* **Fast TTS:** Utilizes the Murf Falcon TTS API (`murf.TTS`) for fast, human-like voice responses, enhancing the real-time conversation experience.
+* **Tech Stack:** LiveKit Agents SDK, Google Gemini 2.5 Flash (LLM), Deepgram (STT), Murf (TTS), Silero (VAD).
 
-* **Real-Time Conversational Flow:** Built on LiveKit Agents for handling bi-directional streaming audio.
-* **Ultra-Low Latency TTS:** Utilizes the **Murf Falcon TTS API** to achieve **sub-150ms Time-to-First-Audio (TTFA)**, ensuring the conversation feels instant and lag-free.
-* **Complex Order Handling:** Successfully processes natural language requests for custom drinks, including size, type (Latte, Espresso), milk, syrups, and temperature.
-* **Barge-In and Interruption Management:** The agent is configured to handle user interruptions and mid-sentence corrections gracefully.
-* **Automated Data Persistence:** Finalized orders are processed and automatically saved to the backend as structured **JSON files** in the `/orders` directory, ready for integration with a Point of Sale (POS) or Kitchen Display System (KDS).
-
----
-
-## ⚙️ Technology Stack
-
-| Component | Technology / Library | Purpose |
-| :--- | :--- | :--- |
-| **Agent Framework** | LiveKit Agents | Orchestration and handling of real-time voice sessions. |
-| **Text-to-Speech (TTS)** | Murf Falcon API | High-speed, low-latency voice synthesis. |
-| **ASR / NLP** | [Specify your ASR/NLP here, e.g., OpenAI/Local LLM] | Real-time speech transcription and intent processing. |
-| **Language** | Python | Core agent logic and state management. |
-
----
-
-## 🏃 Getting Started
+## 🚀 How to Run
 
 ### Prerequisites
 
-* Python 3.8+
-* A Murf AI API Key (for Falcon TTS)
-* A LiveKit Server running or access to a LiveKit Cloud project.
+1.  **Python:** Ensure you have Python 3.9+ installed.
+2.  **LiveKit Server:** A running LiveKit server is required.
+3.  **API Keys:** Set up your environment variables for all required services (LiveKit, Murf, Deepgram, Google/Gemini).
 
-### Installation
+### Setup Steps
 
-1.  **Clone the Repository:**
-    ```bash
-    git clone [https://github.com/Mohammed-habeeb78/MURF_AI_day2.git](https://github.com/Mohammed-habeeb78/MURF_AI_day2.git)
-    cd MURF_AI_day2
-    ```
+1.  **Clone the Repository (or setup the files):**
+    * `agent.py` (your provided code)
+    * `store_faq.json` (will be generated if missing)
+    * `.env.local` (for API keys)
 
-2.  **Set up the Virtual Environment:**
-    ```bash
-    python -m venv venv
-    source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
-    ```
-
-3.  **Install Dependencies:**
+2.  **Install Dependencies:**
     ```bash
     pip install -r requirements.txt
+    # requirements.txt should contain: livekit-agents, python-dotenv, pydantic, livekit-plugins-murf, livekit-plugins-deepgram, livekit-plugins-google, livekit-plugins-silero, livekit-plugins-noise-cancellation
     ```
 
-### Configuration
+3.  **Configure Environment Variables**
 
-Create a file named `.env` in the root directory and populate it with your API keys and LiveKit server details:
+    Create a file named `.env.local` and populate it with your keys:
 
-```env
-# LiveKit Server Configuration
-LIVEKIT_URL="wss://<your-livekit-server-url>"
-LIVEKIT_API_KEY="<your-livekit-api-key>"
-LIVEKIT_API_SECRET="<your-livekit-api-secret>"
+    ```env
+    LIVEKIT_URL="ws://localhost:7880"
+    LIVEKIT_API_KEY="YOUR_API_KEY"
+    LIVEKIT_API_SECRET="YOUR_API_SECRET"
+    
+    # Text-to-Speech (TTS)
+    MURF_API_KEY="YOUR_MURF_API_KEY"
+    
+    # Speech-to-Text (STT)
+    DEEPGRAM_API_KEY="YOUR_DEEPGRAM_API_KEY"
+    
+    # Large Language Model (LLM)
+    GEMINI_API_KEY="YOUR_GEMINI_API_KEY"
+    ```
 
-# Murf Falcon TTS Configuration
-MURF_API_KEY="<your-murf-falcon-api-key>"
-Running the Agent
-Start the agent using the following command:
+4.  **Start the Agent:**
 
-Bash
+    ```bash
+    python agent.py
+    ```
 
-python agent.py
-The agent will connect to your LiveKit server and be ready to accept voice connections (e.g., from the LiveKit Playground or a custom client).
+## 🧠 Agent Behavior & Flow
 
-📁 Project Structure
-MURF_AI_day2/
-├── agent.py               # Main Barista Agent logic and LiveKit Agent setup
-├── requirements.txt       # Project dependencies
-├── .env.example           # Template for environment variables
-├── orders/                # Directory where finalized JSON orders are saved
-│   └── 2025-11-24_order_1.json 
-└── README.md              # This file
-🤝 Contribution
-Feel free to open issues or submit pull requests. All feedback is welcome!
+1.  **Initial Greeting:** The agent "Sarah" will welcome the user.
+2.  **FAQ Handling:** The user asks a question (e.g., "How much is the course?"). Sarah answers using the `STORE_FAQ_TEXT`.
+3.  **Lead Capture:** After answering, Sarah transitions into a qualification question (e.g., "What are you trying to build?").
+4.  **Tool Use:** When the user replies with their **name** or **email**, the LLM intelligently calls the `update_lead_profile` tool to save the data immediately.
+5.  **Closing:** When the user says "thanks, that's all," the LLM calls `submit_lead_and_end`.
+6.  **Database:** The final lead profile is appended to `leads_db.json`.
 
-🙏 Credits
-Challenge Organizers: Murf AI & LiveKit
-
-Challenge Link: https://github.com/murf-ai/ten-days-of-voice-agents-2025/blob/main/challenges/Day%202%20Task.md
+---
