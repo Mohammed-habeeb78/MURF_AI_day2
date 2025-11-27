@@ -1,91 +1,46 @@
-# ☕ AI Voice Agents Challenge | Day 2: Coffee Shop Barista Agent
+# 🏦 ICICI Bank Fraud Alert Voice Agent (SQLite Backend)
 
-This project is the submission for Day 2 of the AI Voice Agents Challenge, focusing on building a high-performance, real-time voice agent capable of handling complex coffee orders.
+This project is a solution for Day 6 of the **Ten Days of Voice Agents Challenge** by Murf and LiveKit. It implements an AI Voice Agent that simulates a **Fraud Detection Specialist** from ICICI Bank.
 
-The agent simulates a complete drive-thru or counter ordering experience, designed for low latency and natural, human-like interaction.
+The agent, named 'Alex', calls a customer to verify a high-risk transaction. It follows a strict security protocol, authenticates the customer's identity, reviews the transaction, and updates a backend database based on the customer's confirmation.
 
----
+## 🚀 Agent Workflow & Logic
 
-## 🚀 Key Features
+The agent follows a strict, sequential security protocol enforced by its internal instructions and the use of dedicated tools.
 
-* **Real-Time Conversational Flow:** Built on LiveKit Agents for handling bi-directional streaming audio.
-* **Ultra-Low Latency TTS:** Utilizes the **Murf Falcon TTS API** to achieve **sub-150ms Time-to-First-Audio (TTFA)**, ensuring the conversation feels instant and lag-free.
-* **Complex Order Handling:** Successfully processes natural language requests for custom drinks, including size, type (Latte, Espresso), milk, syrups, and temperature.
-* **Barge-In and Interruption Management:** The agent is configured to handle user interruptions and mid-sentence corrections gracefully.
-* **Automated Data Persistence:** Finalized orders are processed and automatically saved to the backend as structured **JSON files** in the `/orders` directory, ready for integration with a Point of Sale (POS) or Kitchen Display System (KDS).
+1.  **Greeting & Initial Query:** Greets the user and asks for their first name.
+2.  **Customer Lookup:** Calls the `lookup_customer(name)` tool to find a pending fraud case.
+3.  **Identity Verification:** Asks the user for their unique **Security Identifier**.
+    * **Success:** Continues to the transaction review.
+    * **Failure:** Politely ends the call and advises the customer to contact the bank's main line.
+4.  **Transaction Review:** Explains the suspicious transaction (amount, merchant, time) found in the database.
+5.  **Resolution:** Asks the crucial question: "Did you make this transaction?"
+    * **YES:** Calls `resolve_fraud_case('confirmed_safe')`.
+    * **NO:** Calls `resolve_fraud_case('confirmed_fraud')` (which simulates blocking the card).
+6.  **Professional Close:** Provides a final update and ends the call.
 
----
+## 🛠️ Project Setup
 
-## ⚙️ Technology Stack
+### 1. Prerequisites
 
-| Component | Technology / Library | Purpose |
-| :--- | :--- | :--- |
-| **Agent Framework** | LiveKit Agents | Orchestration and handling of real-time voice sessions. |
-| **Text-to-Speech (TTS)** | Murf Falcon API | High-speed, low-latency voice synthesis. |
-| **ASR / NLP** | [Specify your ASR/NLP here, e.g., OpenAI/Local LLM] | Real-time speech transcription and intent processing. |
-| **Language** | Python | Core agent logic and state management. |
+* Python 3.9+
+* LiveKit and Murf API Keys
 
----
+### 2. Environment Variables
 
-## 🏃 Getting Started
+Create a file named `.env.local` in the project root and populate it with your credentials:
 
-### Prerequisites
+```bash
+# LiveKit Credentials
+LIVEKIT_URL="wss://<your_livekit_url>"
+LIVEKIT_API_KEY="<your_api_key>"
+LIVEKIT_API_SECRET="<your_api_secret>"
 
-* Python 3.8+
-* A Murf AI API Key (for Falcon TTS)
-* A LiveKit Server running or access to a LiveKit Cloud project.
+# Murf API Key (used for high-speed TTS)
+MURF_API_KEY="<your_murf_api_key>"
 
-### Installation
+# Deepgram API Key (used for STT)
+DEEPGRAM_API_KEY="<your_deepgram_api_key>"
 
-1.  **Clone the Repository:**
-    ```bash
-    git clone [https://github.com/Mohammed-habeeb78/MURF_AI_day2.git](https://github.com/Mohammed-habeeb78/MURF_AI_day2.git)
-    cd MURF_AI_day2
-    ```
-
-2.  **Set up the Virtual Environment:**
-    ```bash
-    python -m venv venv
-    source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
-    ```
-
-3.  **Install Dependencies:**
-    ```bash
-    pip install -r requirements.txt
-    ```
-
-### Configuration
-
-Create a file named `.env` in the root directory and populate it with your API keys and LiveKit server details:
-
-```env
-# LiveKit Server Configuration
-LIVEKIT_URL="wss://<your-livekit-server-url>"
-LIVEKIT_API_KEY="<your-livekit-api-key>"
-LIVEKIT_API_SECRET="<your-livekit-api-secret>"
-
-# Murf Falcon TTS Configuration
-MURF_API_KEY="<your-murf-falcon-api-key>"
-Running the Agent
-Start the agent using the following command:
-
-Bash
-
-python agent.py
-The agent will connect to your LiveKit server and be ready to accept voice connections (e.g., from the LiveKit Playground or a custom client).
-
-📁 Project Structure
-MURF_AI_day2/
-├── agent.py               # Main Barista Agent logic and LiveKit Agent setup
-├── requirements.txt       # Project dependencies
-├── .env.example           # Template for environment variables
-├── orders/                # Directory where finalized JSON orders are saved
-│   └── 2025-11-24_order_1.json 
-└── README.md              # This file
-🤝 Contribution
-Feel free to open issues or submit pull requests. All feedback is welcome!
-
-🙏 Credits
-Challenge Organizers: Murf AI & LiveKit
-
-Challenge Link: https://github.com/murf-ai/ten-days-of-voice-agents-2025/blob/main/challenges/Day%202%20Task.md
+# Google API Key (used for LLM)
+GOOGLE_API_KEY="<your_google_api_key>"
