@@ -1,91 +1,74 @@
-# ☕ AI Voice Agents Challenge | Day 2: Coffee Shop Barista Agent
+# 🇮🇳 Day 7: AI Food & Grocery Ordering Voice Agent (Indian Context)
 
-This project is the submission for Day 2 of the AI Voice Agents Challenge, focusing on building a high-performance, real-time voice agent capable of handling complex coffee orders.
+This project completes Day 7 of the AI Voice Agent Challenge. It implements a fully functional voice agent for food and grocery ordering, featuring persistent state management using a local **SQLite database** and an Indian-centric product catalog.
 
-The agent simulates a complete drive-thru or counter ordering experience, designed for low latency and natural, human-like interaction.
+The agent, named **"Robin,"** is designed to provide a natural, conversational interface for an e-commerce platform.
 
----
+## ✨ Features
 
-## 🚀 Key Features
+* **Persistent SQLite Backend:** Uses `order_db.sqlite` to store product catalog, order history, and simulate order updates.
+* **Indian Catalog:** Seeded with popular Indian brands and staples (Amul, Tata, Maggi, Basmati Rice, etc.).
+* **Comprehensive Cart Management:** Tools for searching the catalog (`find_item`), managing the cart (`add_to_cart`, `remove_from_cart`, `show_cart`, `update_cart_quantity`).
+* **Intelligent Recipe Tooling:**
+    * `add_recipe`: Adds pre-defined ingredient lists for common Indian dishes (e.g., "chai", "paneer butter masala").
+    * `ingredients_for`: Attempts to infer ingredients for a dish based on catalog tags and can parse **servings/quantity** from the user's request.
+* **Real-time Order Tracking Simulation:**
+    * The `place_order` tool triggers an **async background task** (`simulate_delivery_flow`) that automatically updates the order status in the DB every 5 seconds (e.g., `received` -> `confirmed` -> `shipped` -> `delivered`).
+    * Tools to check status (`get_order_status`), view history (`order_history`), and cancel orders (`cancel_order`).
+* **High-Speed TTS:** Leverages the **Murf Falcon** API for low-latency text-to-speech, ensuring a fast and natural user experience.
 
-* **Real-Time Conversational Flow:** Built on LiveKit Agents for handling bi-directional streaming audio.
-* **Ultra-Low Latency TTS:** Utilizes the **Murf Falcon TTS API** to achieve **sub-150ms Time-to-First-Audio (TTFA)**, ensuring the conversation feels instant and lag-free.
-* **Complex Order Handling:** Successfully processes natural language requests for custom drinks, including size, type (Latte, Espresso), milk, syrups, and temperature.
-* **Barge-In and Interruption Management:** The agent is configured to handle user interruptions and mid-sentence corrections gracefully.
-* **Automated Data Persistence:** Finalized orders are processed and automatically saved to the backend as structured **JSON files** in the `/orders` directory, ready for integration with a Point of Sale (POS) or Kitchen Display System (KDS).
+## 🛠️ Tools & Technologies Used
 
----
+* **LLM & Orchestration:** LiveKit Agents with Google Gemini 2.5 Flash
+* **Text-to-Speech (TTS):** Murf Falcon (for speed and quality)
+* **Speech-to-Text (STT):** Deepgram Nova-3
+* **Database:** SQLite3 (`order_db.sqlite`)
+* **Language:** Python 3.10+
+* **Order Simulation:** Python `asyncio`
 
-## ⚙️ Technology Stack
+## 💬 Agent Tools (Key Functions)
 
-| Component | Technology / Library | Purpose |
-| :--- | :--- | :--- |
-| **Agent Framework** | LiveKit Agents | Orchestration and handling of real-time voice sessions. |
-| **Text-to-Speech (TTS)** | Murf Falcon API | High-speed, low-latency voice synthesis. |
-| **ASR / NLP** | [Specify your ASR/NLP here, e.g., OpenAI/Local LLM] | Real-time speech transcription and intent processing. |
-| **Language** | Python | Core agent logic and state management. |
+The agent has access to the following domain-specific tools, defined as `function_tool`s in the code:
 
----
+| Function Name | Description |
+| :--- | :--- |
+| `find_item` | Searches the product catalog by name or tag. |
+| `add_to_cart` | Adds a specified item ID and quantity to the user's cart. |
+| `remove_from_cart` | Removes an item from the cart. |
+| `update_cart_quantity` | Changes the quantity of an item already in the cart. |
+| `show_cart` | Displays all items currently in the cart with the total cost. |
+| `add_recipe` | Adds all ingredients for a known dish (e.g., 'chai'). |
+| `ingredients_for` | Advanced recipe tool using tag-inference and serving parsing. |
+| `place_order` | Finalizes the purchase, clears the cart, and triggers the async status simulation. |
+| `cancel_order` | Cancels an order if it hasn't been delivered yet. |
+| `get_order_status` | Checks the real-time status of a placed order. |
+| `order_history` | Lists the customer's recent orders. |
 
-## 🏃 Getting Started
+## 🚀 How to Run
 
-### Prerequisites
-
-* Python 3.8+
-* A Murf AI API Key (for Falcon TTS)
-* A LiveKit Server running or access to a LiveKit Cloud project.
-
-### Installation
-
-1.  **Clone the Repository:**
+1.  **Clone the repository:**
     ```bash
-    git clone [https://github.com/Mohammed-habeeb78/MURF_AI_day2.git](https://github.com/Mohammed-habeeb78/MURF_AI_day2.git)
-    cd MURF_AI_day2
+    git clone [Your Repo URL]
+    cd [your-repo-folder]
     ```
 
-2.  **Set up the Virtual Environment:**
+2.  **Set up the environment:**
+    * Ensure you have a Python environment ready.
+    * Create a `.env.local` file with your API keys:
+        ```env
+        LIVEKIT_URL="ws://localhost:7880"
+        LIVEKIT_API_KEY="your_api_key"
+        LIVEKIT_API_SECRET="your_api_secret"
+        MURF_API_KEY="your_murf_api_key"
+        DEEPGRAM_API_KEY="your_deepgram_api_key"
+        ```
+
+3.  **Run the agent:**
     ```bash
-    python -m venv venv
-    source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
+    python food_agent_sqlite.py
     ```
+    *(The agent will automatically seed the `order_db.sqlite` file on the first run.)*
 
-3.  **Install Dependencies:**
-    ```bash
-    pip install -r requirements.txt
-    ```
+4.  **Connect:** Use the LiveKit Egress or a custom client to connect to the running agent.
 
-### Configuration
-
-Create a file named `.env` in the root directory and populate it with your API keys and LiveKit server details:
-
-```env
-# LiveKit Server Configuration
-LIVEKIT_URL="wss://<your-livekit-server-url>"
-LIVEKIT_API_KEY="<your-livekit-api-key>"
-LIVEKIT_API_SECRET="<your-livekit-api-secret>"
-
-# Murf Falcon TTS Configuration
-MURF_API_KEY="<your-murf-falcon-api-key>"
-Running the Agent
-Start the agent using the following command:
-
-Bash
-
-python agent.py
-The agent will connect to your LiveKit server and be ready to accept voice connections (e.g., from the LiveKit Playground or a custom client).
-
-📁 Project Structure
-MURF_AI_day2/
-├── agent.py               # Main Barista Agent logic and LiveKit Agent setup
-├── requirements.txt       # Project dependencies
-├── .env.example           # Template for environment variables
-├── orders/                # Directory where finalized JSON orders are saved
-│   └── 2025-11-24_order_1.json 
-└── README.md              # This file
-🤝 Contribution
-Feel free to open issues or submit pull requests. All feedback is welcome!
-
-🙏 Credits
-Challenge Organizers: Murf AI & LiveKit
-
-Challenge Link: https://github.com/murf-ai/ten-days-of-voice-agents-2025/blob/main/challenges/Day%202%20Task.md
+---
