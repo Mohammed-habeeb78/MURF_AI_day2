@@ -1,91 +1,249 @@
-# ☕ AI Voice Agents Challenge | Day 2: Coffee Shop Barista Agent
+🎙️ Project "Aurek": The Voice Game Master Agent
 
-This project is the submission for Day 2 of the AI Voice Agents Challenge, focusing on building a high-performance, real-time voice agent capable of handling complex coffee orders.
+<!-- Professional Header & Tagline -->
 
-The agent simulates a complete drive-thru or counter ordering experience, designed for low latency and natural, human-like interaction.
+A zero-latency, tool-driven AI Game Master for voice-only D&D adventures.
+Leveraging high-speed TTS and robust LLM function calling for immersive, continuous storytelling.
 
----
+🛡️ Status & Tech Badges
 
-## 🚀 Key Features
+Status
 
-* **Real-Time Conversational Flow:** Built on LiveKit Agents for handling bi-directional streaming audio.
-* **Ultra-Low Latency TTS:** Utilizes the **Murf Falcon TTS API** to achieve **sub-150ms Time-to-First-Audio (TTFA)**, ensuring the conversation feels instant and lag-free.
-* **Complex Order Handling:** Successfully processes natural language requests for custom drinks, including size, type (Latte, Espresso), milk, syrups, and temperature.
-* **Barge-In and Interruption Management:** The agent is configured to handle user interruptions and mid-sentence corrections gracefully.
-* **Automated Data Persistence:** Finalized orders are processed and automatically saved to the backend as structured **JSON files** in the `/orders` directory, ready for integration with a Point of Sale (POS) or Kitchen Display System (KDS).
+Model Stack
 
----
+Speech Providers
 
-## ⚙️ Technology Stack
+Framework
 
-| Component | Technology / Library | Purpose |
-| :--- | :--- | :--- |
-| **Agent Framework** | LiveKit Agents | Orchestration and handling of real-time voice sessions. |
-| **Text-to-Speech (TTS)** | Murf Falcon API | High-speed, low-latency voice synthesis. |
-| **ASR / NLP** | [Specify your ASR/NLP here, e.g., OpenAI/Local LLM] | Real-time speech transcription and intent processing. |
-| **Language** | Python | Core agent logic and state management. |
 
----
 
-## 🏃 Getting Started
 
-### Prerequisites
 
-* Python 3.8+
-* A Murf AI API Key (for Falcon TTS)
-* A LiveKit Server running or access to a LiveKit Cloud project.
 
-### Installation
 
-1.  **Clone the Repository:**
-    ```bash
-    git clone [https://github.com/Mohammed-habeeb78/MURF_AI_day2.git](https://github.com/Mohammed-habeeb78/MURF_AI_day2.git)
-    cd MURF_AI_day2
-    ```
 
-2.  **Set up the Virtual Environment:**
-    ```bash
-    python -m venv venv
-    source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
-    ```
 
-3.  **Install Dependencies:**
-    ```bash
-    pip install -r requirements.txt
-    ```
+Project State: Active Development
 
-### Configuration
+Domain: Real-Time Conversational AI (CAI)
 
-Create a file named `.env` in the root directory and populate it with your API keys and LiveKit server details:
 
-```env
-# LiveKit Server Configuration
-LIVEKIT_URL="wss://<your-livekit-server-url>"
-LIVEKIT_API_KEY="<your-livekit-api-key>"
-LIVEKIT_API_SECRET="<your-livekit-api-secret>"
 
-# Murf Falcon TTS Configuration
-MURF_API_KEY="<your-murf-falcon-api-key>"
+
+
+📜 Table of Contents
+
+🌟 Quick Overview
+
+🛠️ Technology Stack
+
+🧠 Architectural Deep Dive
+
+⚙️ Key Tool Functions
+
+🚀 Setup and Installation
+
+💡 Usage Example
+
+🗺️ Roadmap
+
+🌟 Quick Overview
+
+The "Aurek" agent operates as a highly responsive, low-magic fantasy Game Master for the Brinmere Mini-Arc. The agent’s core strength lies in its ability to decouple narrative voice from game logic.
+
+Feature
+
+Description
+
+Persona
+
+'Aurek' — Calm, mysterious narrator with persistent memory.
+
+Game Logic
+
+Handled by specialized Python functions, preventing LLM drift or hallucination of game state.
+
+State Persistence
+
+Managed via the Userdata dataclass (Journal, Inventory, current_scene).
+
+Voice UX
+
+Optimized for zero-latency turn-taking; every GM response strictly ends with the prompt: "What do you do?"
+
+🛠️ Technology Stack
+
+Component
+
+Technology
+
+Technical Role in the Agent Pipeline
+
+Framework
+
+livekit-agents
+
+Core pipeline for audio streaming, conferencing, and job management.
+
+LLM
+
+google.LLM (Gemini 2.5 Flash)
+
+Mandatory Tool Router. Interprets player intent and routes execution to the correct Python function.
+
+TTS (Output)
+
+murf.TTS (Murf Falcon)
+
+Critical low-latency performance. Converts the GM's response text to ultra-fast audio.
+
+STT (Input)
+
+deepgram.STT (Nova-3)
+
+Provides highly accurate transcription of spoken player actions.
+
+State Manager
+
+Python dataclasses
+
+Manages the session's memory (Userdata) across all turns for continuity.
+
+VAD / Turns
+
+silero.VAD
+
+Detects silence to accurately determine the end of the player's spoken turn.
+
+🧠 Architectural Deep Dive
+
+The agent adheres to a strict Tool-Calling Architecture to ensure predictable, deterministic gameplay.
+
+Player Input 🗣️: Player speaks an action (e.g., "I will take the box").
+
+Transcription & Turn End 📝: Deepgram & VAD process the audio and confirm the turn is over.
+
+LLM Intent & Tool Call 🤖: Gemini 2.5 Flash receives the text and generates the tool call: player_action(action="take the box").
+
+Tool Execution (Game Engine) 💻: The Python function player_action executes the game logic:
+
+Fuzzy Matching resolves "take the box" to the internal key (inspect_box).
+
+State Update is performed (add_journal, update current_scene).
+
+A clean text block of the result and the next scene is returned.
+
+GM Narration ✨: The LLM receives the text block, applies the 'Aurek' persona, and prepends a dramatic flair to the scene description.
+
+Low-Latency Output 🔊: Murf Falcon renders the final narrative to audio, closing the loop back to the player.
+
+⚙️ Key Tool Functions
+
+The agent's logic is defined by these five custom function_tool implementations:
+
+Function
+
+Description
+
+Technical Role
+
+start_adventure
+
+Resets the game state and delivers the opening narration.
+
+Initialization
+
+get_scene
+
+Returns the current descriptive text and available choices to the player.
+
+Context Retrieval
+
+player_action
+
+The Core Engine. Resolves player input against defined actions, updates the Userdata state, and handles scene transitions.
+
+State Transition
+
+show_journal
+
+Presents the current inventory, key facts, and recent choices made.
+
+Reference & Debugging
+
+restart_adventure
+
+Hard reset of the session, including all history and inventory.
+
+System Reset
+
+🚀 Setup and Installation
+
+Prerequisites
+
+Python 3.9+ environment.
+
+Install LiveKit Agents and dependencies: pip install livekit-agents livekit-plugins-deepgram livekit-plugins-murf livekit-plugins-silero
+
+Environment Configuration
+
+Create a file named .env.local in the project root and populate it with your API credentials. Note the explicit requirement for Murf and Deepgram keys.
+
+LIVEKIT_URL="ws://<your-livekit-url>"
+LIVEKIT_API_KEY="<your-api-key>"
+LIVEKIT_API_SECRET="<your-api-secret>"
+
+MURF_API_KEY="<your-murf-api-key>"
+DEEPGRAM_API_KEY="<your-deepgram-api-key>"
+# Google key may be optional depending on your LiveKit setup
+GOOGLE_API_KEY="<your-gemini-api-key>"
+
+
 Running the Agent
-Start the agent using the following command:
 
-Bash
+Start the worker and connect it to your LiveKit room infrastructure:
 
-python agent.py
-The agent will connect to your LiveKit server and be ready to accept voice connections (e.g., from the LiveKit Playground or a custom client).
+python game_master_agent.py
 
-📁 Project Structure
-MURF_AI_day2/
-├── agent.py               # Main Barista Agent logic and LiveKit Agent setup
-├── requirements.txt       # Project dependencies
-├── .env.example           # Template for environment variables
-├── orders/                # Directory where finalized JSON orders are saved
-│   └── 2025-11-24_order_1.json 
-└── README.md              # This file
-🤝 Contribution
-Feel free to open issues or submit pull requests. All feedback is welcome!
 
-🙏 Credits
-Challenge Organizers: Murf AI & LiveKit
+The worker will wait for a job and can be invited into any LiveKit room you create.
 
-Challenge Link: https://github.com/murf-ai/ten-days-of-voice-agents-2025/blob/main/challenges/Day%202%20Task.md
+💡 Usage Example
+
+Once the agent joins the room, the player begins the session with:
+
+Player Speaks
+
+LLM Tool Called
+
+Agent Response
+
+"Start the adventure, I'm Elara."
+
+start_adventure(player_name="Elara")
+
+[Aurek's voice]: "Greetings Elara... You awake on the damp shore of Brinmere... What do you do?"
+
+"I inspect the box."
+
+player_action(action="inspect the box")
+
+[Aurek's voice]: "You chose 'inspect_box'. The box is warm... Inside is a folded scrap of parchment... What do you do?"
+
+"Show my journal."
+
+show_journal()
+
+[Aurek's voice]: "Journal entries: None. Inventory: None. What do you do?"
+
+🗺️ Roadmap
+
+Future enhancements planned to evolve this agent from a mini-arc demo into a full conversational RPG platform:
+
+✅ Multi-speaker NPC Voices: Assigning unique Murf voices to named NPCs (e.g., 'Joe' for a tavern keeper, 'Jane' for a quest giver).
+
+🔄 Dynamic World Generation: Replacing the static WORLD dictionary with a dynamic LLM-driven scene generation system, constrained by genre rules.
+
+⚔️ Simple Combat System: Implementing dice-roll mechanics using tools to resolve conflict (e.g., roll_d20(modifier)).
+
+🌐 Firestore Integration: Persistent player profiles and long-term campaign tracking via cloud storage.
