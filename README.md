@@ -1,12 +1,12 @@
-# 🛍️ Ramu Kaka: Voice E-commerce Agent (GenZ Shop)
+# 🛍️ Darren: Voice E-commerce Agent (Amex Shop)
 
 This project is a submission for Day 9 of the **AI Voice Agent Challenge**, focusing on building a fully functional, transactional **E-commerce Voice Agent**.
 
-Named "Ramu Kaka" after the friendly, helpful shopkeeper archetype, this agent assists customers in browsing the product catalog, managing their shopping cart, and placing orders using only voice commands.
+Named "Darren" after the friendly, helpful shopkeeper archetype, this agent assists customers in browsing the product catalog, managing their shopping cart, and placing orders using only voice commands.
 
 ## ✨ Features
 
-* **Product Catalog:** Manages a simple, Indian-themed catalog (GenZ Shop) with items like T-shirts, Mugs, Hoodies, and Mobile Phones.
+* **Product Catalog:** Manages a simple, Indian-themed catalog (Amex Shop) with items like T-shirts, Mugs, Hoodies, and Mobile Phones.
 * **Conversational Shopping:** Allows users to search the catalog, add items to the cart by name, ID, or ordinal reference (e.g., "the second phone").
 * **Cart Management:** Tools to view and clear the current session's shopping cart.
 * **Order Placement:** Simulates a checkout process by placing and persisting the order to a local `orders.json` file.
