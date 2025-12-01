@@ -1,91 +1,55 @@
-# ☕ AI Voice Agents Challenge | Day 2: Coffee Shop Barista Agent
+# 🎭 AI Voice Agent Challenge: Day 10 - Improv Battle Host
 
-This project is the submission for Day 2 of the AI Voice Agents Challenge, focusing on building a high-performance, real-time voice agent capable of handling complex coffee orders.
+This project is the final submission for the LiveKit and Murf AI "10 Days of Voice Agents Challenge," focusing on creating an engaging, voice-first AI host for an improv game.
 
-The agent simulates a complete drive-thru or counter ordering experience, designed for low latency and natural, human-like interaction.
+The agent, **"Improv Battle Host,"** guides a player through a series of short, challenging improv scenarios, providing real-time reactions and a final summary.
 
----
+## ✨ Features
 
-## 🚀 Key Features
+* **Voice-First Interaction:** Built on the LiveKit Agents SDK for seamless, low-latency, real-time voice conversation.
+* **High-Energy Host Persona:** Uses a detailed system prompt and dedicated tools to act as a witty, encouraging, and clear TV show host.
+* **Dynamic Improv Game Flow:** Manages session state (rounds, player name, scenarios) using a Pydantic `Userdata` class.
+* **Scenario Management:** Presents pre-seeded, engaging scenarios and avoids repetition.
+* **Performance Feedback:** Utilizes a lightweight heuristic (`_host_reaction_text`) to generate varied, tone-specific (supportive, neutral, critical) feedback after each player performance.
+* **Show Summary:** Produces a final recap and a personalized profile of the player's improv style upon completion.
+* **Fast TTS Integration:** Uses the **Murf Falcon TTS API** for the fastest possible text-to-speech output, ensuring the host's responses feel immediate and natural.
 
-* **Real-Time Conversational Flow:** Built on LiveKit Agents for handling bi-directional streaming audio.
-* **Ultra-Low Latency TTS:** Utilizes the **Murf Falcon TTS API** to achieve **sub-150ms Time-to-First-Audio (TTFA)**, ensuring the conversation feels instant and lag-free.
-* **Complex Order Handling:** Successfully processes natural language requests for custom drinks, including size, type (Latte, Espresso), milk, syrups, and temperature.
-* **Barge-In and Interruption Management:** The agent is configured to handle user interruptions and mid-sentence corrections gracefully.
-* **Automated Data Persistence:** Finalized orders are processed and automatically saved to the backend as structured **JSON files** in the `/orders` directory, ready for integration with a Point of Sale (POS) or Kitchen Display System (KDS).
+## 🛠️ Technology Stack
 
----
+* **Agent Framework:** LiveKit Agents SDK
+* **LLM (Large Language Model):** Google Gemini 2.5 Flash
+* **TTS (Text-to-Speech):** Murf Falcon (using `murf.TTS`)
+* **STT (Speech-to-Text):** Deepgram Nova-3
+* **Voice Activity Detection (VAD):** LiveKit's Multilingual Turn Detector & Silero VAD
+* **Noise Cancellation:** LiveKit's BVC
 
-## ⚙️ Technology Stack
+## 🔧 Core Tools Exposed to the LLM
 
-| Component | Technology / Library | Purpose |
+The `GameMasterAgent` uses the following tools to manage the show flow:
+
+| Tool Name | Description | Used By Host When... |
 | :--- | :--- | :--- |
-| **Agent Framework** | LiveKit Agents | Orchestration and handling of real-time voice sessions. |
-| **Text-to-Speech (TTS)** | Murf Falcon API | High-speed, low-latency voice synthesis. |
-| **ASR / NLP** | [Specify your ASR/NLP here, e.g., OpenAI/Local LLM] | Real-time speech transcription and intent processing. |
-| **Language** | Python | Core agent logic and state management. |
+| `start_show` | Initializes the game session, player name, and max rounds. | The user says "start show" or similar. |
+| `next_scenario` | Advances to the next round if rounds are remaining. | The user says "next" or after a reaction if the host prompts for the next scene. |
+| `record_performance` | Saves the player's transcribed improv, generates a host reaction, and checks for the end of the game. | The user stops speaking after receiving a scenario (handled by the LiveKit runtime plumbing). |
+| `summarize_show` | Generates a final recap and player profile. | The maximum number of rounds has been reached. |
+| `stop_show` | Allows for graceful early exit. | The user explicitly asks to end the show. |
 
----
+## 🚀 Getting Started
 
-## 🏃 Getting Started
+1.  **Set up your environment variables** in a `.env.local` file (or similar), including API keys for LiveKit, Murf, Deepgram, and Google.
 
-### Prerequisites
-
-* Python 3.8+
-* A Murf AI API Key (for Falcon TTS)
-* A LiveKit Server running or access to a LiveKit Cloud project.
-
-### Installation
-
-1.  **Clone the Repository:**
     ```bash
-    git clone [https://github.com/Mohammed-habeeb78/MURF_AI_day2.git](https://github.com/Mohammed-habeeb78/MURF_AI_day2.git)
-    cd MURF_AI_day2
+    LIVEKIT_URL="..."
+    LIVEKIT_API_KEY="..."
+    LIVEKIT_API_SECRET="..."
+    MURF_API_KEY="..."
+    DEEPGRAM_API_KEY="..."
+    GOOGLE_API_KEY="..."
     ```
 
-2.  **Set up the Virtual Environment:**
+2.  **Run the agent** using the LiveKit CLI:
+
     ```bash
-    python -m venv venv
-    source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
+    lk-agents run --entrypoint 'your_file_name:entrypoint'
     ```
-
-3.  **Install Dependencies:**
-    ```bash
-    pip install -r requirements.txt
-    ```
-
-### Configuration
-
-Create a file named `.env` in the root directory and populate it with your API keys and LiveKit server details:
-
-```env
-# LiveKit Server Configuration
-LIVEKIT_URL="wss://<your-livekit-server-url>"
-LIVEKIT_API_KEY="<your-livekit-api-key>"
-LIVEKIT_API_SECRET="<your-livekit-api-secret>"
-
-# Murf Falcon TTS Configuration
-MURF_API_KEY="<your-murf-falcon-api-key>"
-Running the Agent
-Start the agent using the following command:
-
-Bash
-
-python agent.py
-The agent will connect to your LiveKit server and be ready to accept voice connections (e.g., from the LiveKit Playground or a custom client).
-
-📁 Project Structure
-MURF_AI_day2/
-├── agent.py               # Main Barista Agent logic and LiveKit Agent setup
-├── requirements.txt       # Project dependencies
-├── .env.example           # Template for environment variables
-├── orders/                # Directory where finalized JSON orders are saved
-│   └── 2025-11-24_order_1.json 
-└── README.md              # This file
-🤝 Contribution
-Feel free to open issues or submit pull requests. All feedback is welcome!
-
-🙏 Credits
-Challenge Organizers: Murf AI & LiveKit
-
-Challenge Link: https://github.com/murf-ai/ten-days-of-voice-agents-2025/blob/main/challenges/Day%202%20Task.md
