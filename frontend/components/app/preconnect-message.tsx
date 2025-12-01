@@ -5,6 +5,7 @@ import { type ReceivedChatMessage } from '@livekit/components-react';
 import { ShimmerText } from '@/components/livekit/shimmer-text';
 import { cn } from '@/lib/utils';
 
+
 const MotionMessage = motion.create('p');
 
 const VIEW_MOTION_PROPS = {
@@ -46,7 +47,7 @@ export function PreConnectMessage({ className, messages = [] }: PreConnectMessag
           className={cn('pointer-events-none text-center', className)}
         >
           <ShimmerText className="text-sm font-semibold">
-            Agent is listening, ask it a question
+            Host  is listening, show your talent
           </ShimmerText>
         </MotionMessage>
       )}
